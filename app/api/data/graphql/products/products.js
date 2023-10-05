@@ -1,4 +1,5 @@
 import {getProducts, getProductById, createProduct, updateProductById, deleteProductById} from "../../mongodb/products/products";
+import { put } from '@vercel/blob';
 
 const graphql = require('graphql');
 
@@ -53,7 +54,11 @@ export const createProductTask = {
         }
     },
     resolve: async (root, { title, description, img_url, price, featured }) => {
-        return createProduct(title, description, img_url, price, featured);
+        let img_buff = Buffer.from(img_url, 'base64');
+        const { url } = await put('burger.jpg', img_buff, {
+            access: 'public',
+        });
+        return createProduct(title, description, url, price, featured);
     }
 }
 
