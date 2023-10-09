@@ -43,8 +43,11 @@ export const createProductTask = {
         description: {
             type: new graphql.GraphQLNonNull(graphql.GraphQLString)
         },
+        img_blob: {
+            type: graphql.GraphQLString
+        },
         img_url: {
-            type: new graphql.GraphQLNonNull(graphql.GraphQLString)
+            type: graphql.GraphQLString
         },
         price: {
             type: new graphql.GraphQLNonNull(graphql.GraphQLFloat)
@@ -53,12 +56,15 @@ export const createProductTask = {
             type: new graphql.GraphQLNonNull(graphql.GraphQLBoolean)
         }
     },
-    resolve: async (root, { title, description, img_url, price, featured }) => {
-        let img_buff = Buffer.from(img_url, 'base64');
-        const { url } = await put('burger.jpg', img_buff, {
-            access: 'public',
-        });
-        return createProduct(title, description, url, price, featured);
+    resolve: async (root, { title, description, img_blob, img_url, price, featured }) => {
+        if (img_blob){
+            let img_buff = Buffer.from(img_url, 'base64');
+            const { url } = await put('burger.jpg', img_buff, {
+                access: 'public',
+            });
+            img_url = url;
+        }
+        return createProduct(title, description, img_url, price, featured);
     }
 }
 
@@ -74,8 +80,11 @@ export const updateProductByIdTask = {
         description: {
             type: new graphql.GraphQLNonNull(graphql.GraphQLString)
         },
+        img_blob: {
+            type: graphql.GraphQLString
+        },
         img_url: {
-            type: new graphql.GraphQLNonNull(graphql.GraphQLString)
+            type: graphql.GraphQLString
         },
         price: {
             type: new graphql.GraphQLNonNull(graphql.GraphQLFloat)
@@ -85,6 +94,13 @@ export const updateProductByIdTask = {
         }
     },
     resolve: async (root, { _id, title, description, img_url, price, featured }) => {
+        if (img_blob){
+            let img_buff = Buffer.from(img_url, 'base64');
+            const { url } = await put('burger.jpg', img_buff, {
+                access: 'public',
+            });
+            img_url = url;
+        }
         return updateProductById(_id, title, description, img_url, price, featured);
     }
 }
