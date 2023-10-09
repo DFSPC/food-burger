@@ -9,6 +9,7 @@ export const ProductType = new graphql.GraphQLObjectType({
 		_id: { type: graphql.GraphQLID },
         title: { type: graphql.GraphQLString },
         description: { type: graphql.GraphQLString },
+        img_blob: { type: graphql.GraphQLString },
         img_url: { type: graphql.GraphQLString },
         price: { type: graphql.GraphQLFloat },
         featured: { type: graphql.GraphQLBoolean }
@@ -57,14 +58,17 @@ export const createProductTask = {
         }
     },
     resolve: async (root, { title, description, img_blob, img_url, price, featured }) => {
+        let img_url_save;
         if (img_blob){
-            let img_buff = Buffer.from(img_url, 'base64');
+            let img_buff = Buffer.from(img_blob, 'base64');
             const { url } = await put('burger.jpg', img_buff, {
                 access: 'public',
             });
-            img_url = url;
+            img_url_save = url;
+        } else {
+            img_url_save = img_url;
         }
-        return createProduct(title, description, img_url, price, featured);
+        return createProduct(title, description, img_url_save, price, featured);
     }
 }
 
@@ -93,15 +97,18 @@ export const updateProductByIdTask = {
             type: new graphql.GraphQLNonNull(graphql.GraphQLBoolean)
         }
     },
-    resolve: async (root, { _id, title, description, img_url, price, featured }) => {
+    resolve: async (root, { _id, title, description, img_blob, img_url, price, featured }) => {
+        let img_url_save;
         if (img_blob){
-            let img_buff = Buffer.from(img_url, 'base64');
+            let img_buff = Buffer.from(img_blob, 'base64');
             const { url } = await put('burger.jpg', img_buff, {
                 access: 'public',
             });
-            img_url = url;
+            img_url_save = url;
+        } else {
+            img_url_save = img_url;
         }
-        return updateProductById(_id, title, description, img_url, price, featured);
+        return updateProductById(_id, title, description, img_url_save, price, featured);
     }
 }
 
