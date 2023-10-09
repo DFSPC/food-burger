@@ -5,10 +5,6 @@ export async function GET(request) {
 	return graphqlHandler(request);
 }
 
-export async function POST(req) {
-	if (true) {//Add validateToken(req) to validate token
-		return graphqlHandler(req);
-	} else {
-		return NextResponse.json({ error: 'Validate your token' }, { status: 401 });
-	}
+export async function POST(request) {
+	return graphqlHandler(request);
 }

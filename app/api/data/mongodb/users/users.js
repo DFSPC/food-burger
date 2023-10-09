@@ -8,7 +8,6 @@ export async function getUsers(){
         return users;
     } catch (error) {
         client.close();
-        console.log('error', error)
         return [];
     }
 }
@@ -20,7 +19,6 @@ export async function getUserById(_id){
         return user[0] ? user[0] : null;				
     } catch (error) {
         client.close();
-        console.log('error', error);
         return null;
     }
 }
@@ -32,12 +30,11 @@ export async function getUserByEmail(email){
         return user[0] ? user[0] : null;
     } catch (error) {
         client.close();
-        console.log('error', error);
         return null;
     }
 }
 
-export async function createUser(fullname, email, password, cellphone){
+export async function createUser(fullname, email, password, cellphone, rol){
     try {
         let { db } = await connectToDatabase();
         const users = await db.collection("users");
@@ -45,14 +42,14 @@ export async function createUser(fullname, email, password, cellphone){
             fullname: fullname,
             email: email,
             password: password,
-            cellphone:cellphone
+            cellphone:cellphone,
+            rol: rol,
         };
         const insertedId = (await users.insertOne(newUser)).insertedId;
         let user = await db.collection("users").find({_id: new ObjectId(insertedId)}).toArray();
         return user[0] ? user[0] : null;
     } catch (error) {
         client.close();
-        console.log('error', error)
         return 'Problem creating user'
     }
 }
@@ -78,7 +75,6 @@ export async function updateUserById(_id, fullname, email, password, cellphone){
         }
     } catch (error) {
         client.close();
-        console.log('error', error)
         return 'Problem updating user'
     }
 }
@@ -89,7 +85,6 @@ export async function deleteUserById(_id){
         let deleted = await db.collection("users").deleteOne({_id: new ObjectId(_id)});
         return deleted.deletedCount ? `User id ${_id} deleted` : 'Problem deleting user'; 			
     } catch (error) {
-        console.log('error', error);
         return 'Problem deleting user';
     }
 }

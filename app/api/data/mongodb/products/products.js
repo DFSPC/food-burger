@@ -8,7 +8,6 @@ export async function getProducts(){
         return products;
     } catch (error) {
         client.close();
-        console.log('error', error)
         return [];
     }
 }
@@ -20,7 +19,6 @@ export async function getProductById(_id){
         return product[0] ? product[0] : null;				
     } catch (error) {
         client.close();
-        console.log('error', error);
         return null;
     }
 }
@@ -41,7 +39,6 @@ export async function createProduct(title, description, img_url, price, featured
         return product[0] ? product[0] : null;
     } catch (error) {
         client.close();
-        console.log('error', error)
         return 'Problem creating product'
     }
 }
@@ -68,7 +65,6 @@ export async function updateProductById(_id, title, description, img_url, price,
         }
     } catch (error) {
         client.close();
-        console.log('error', error)
         return 'Problem updating product'
     }
 }
@@ -79,7 +75,6 @@ export async function deleteProductById(_id){
         let deleted = await db.collection("products").deleteOne({_id: new ObjectId(_id)});
         return deleted.deletedCount ? `Product id ${_id} deleted` : 'Problem deleting product'; 			
     } catch (error) {
-        console.log('error', error);
         return 'Problem deleting product';
     }
 }

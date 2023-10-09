@@ -33,7 +33,15 @@ const schema = new graphql.GraphQLSchema({
 });
 
 const server = new ApolloServer({
-	schema
+	schema,
+	formatError: (formattedError, error) => {
+		return {
+			code: formattedError.extensions.code,
+			message: formattedError.message,
+		};
+	}
 });
 
-export const graphqlHandler = startServerAndCreateNextHandler(server);
+export const graphqlHandler = startServerAndCreateNextHandler(server, {
+	context: async ( req, res ) => ({ req, res }),
+})
