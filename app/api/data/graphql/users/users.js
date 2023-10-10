@@ -1,8 +1,9 @@
-import {getUsers, getUserById, createUser, updateUserById, deleteUserById} from "../../mongodb/users/users";
+import {getUsers, getUserById, createUser, getUserByEmail, updateUserById, deleteUserById} from "../../mongodb/users/users";
 import { validateToken, createToken } from './../../../common'
 import { GraphQLError } from 'graphql';
 
 const graphql = require('graphql');
+const bcrypt = require('bcryptjs');
 
 export const UserType = new graphql.GraphQLObjectType({
 	name: 'User',
@@ -45,6 +46,34 @@ export const getUserByIdTask = {
     }
 }
 
+export const getUserByEmailPasswordTask = {
+    type: UserType,
+    args: {
+        email: {
+            type: new graphql.GraphQLNonNull(graphql.GraphQLString)
+        },
+        password: {
+            type: new graphql.GraphQLNonNull(graphql.GraphQLString)
+        }
+    },
+    resolve: async (root, { email, password }, context, info) => {
+        let user = await getUserByEmail(email);
+        if (user) {
+            const validatePassword = bcrypt.compareSync(password, user.password);
+            if (validatePassword) {
+                let token = createToken(user);
+                return {...user, token: token};
+            } 
+        } 
+        return new GraphQLError('User is not authenticated', {
+            extensions: {
+              code: 'UNAUTHENTICATED',
+              http: { status: 401 },
+            },
+        });
+    }
+}
+
 export const createUserTask = {
     type: UserType,
     args: {
@@ -62,7 +91,8 @@ export const createUserTask = {
         },
     },
     resolve: async (root, { fullname, email, password, cellphone }, context, info) => {
-        let userData = await createUser(fullname, email, password, cellphone, "consumer");
+        const encryptedPassword = bcrypt.hashSync(password, 10);
+        let userData = await createUser(fullname, email, encryptedPassword, cellphone, "consumer");
         let token = createToken(userData);
         return {...userData, token: token};
     }

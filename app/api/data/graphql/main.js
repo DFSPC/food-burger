@@ -1,6 +1,6 @@
 import { ApolloServer } from '@apollo/server';
 import { startServerAndCreateNextHandler } from '@as-integrations/next';
-import { getUsersTask, getUserByIdTask, createUserTask, updateUserByIdTask, deleteUserByIdTask } from './users/users';
+import { getUsersTask, getUserByIdTask, createUserTask, updateUserByIdTask, deleteUserByIdTask, getUserByEmailPasswordTask } from './users/users';
 import { getProductsTask, getProductByIdTask, createProductTask, updateProductByIdTask, deleteProductByIdTask } from './products/products';
 
 const graphql = require('graphql');
@@ -18,6 +18,7 @@ const queryType = new graphql.GraphQLObjectType({
 const mutationType = new graphql.GraphQLObjectType({
 	name: 'Mutation',
 	fields: {
+		getUserByEmailPassword: getUserByEmailPasswordTask,
 		createProduct: createProductTask,
 		updateProduct: updateProductByIdTask,
 		deleteProduct: deleteProductByIdTask,
@@ -34,12 +35,12 @@ const schema = new graphql.GraphQLSchema({
 
 const server = new ApolloServer({
 	schema,
-	formatError: (formattedError, error) => {
+/* 	formatError: (formattedError, error) => {
 		return {
 			code: formattedError.extensions.code,
 			message: formattedError.message,
 		};
-	}
+	} */
 });
 
 export const graphqlHandler = startServerAndCreateNextHandler(server, {
