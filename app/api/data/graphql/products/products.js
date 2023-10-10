@@ -1,19 +1,25 @@
-import {getProducts, getProductById, createProduct, updateProductById, deleteProductById} from "../../mongodb/products/products";
-import { put } from '@vercel/blob';
+import {
+    getProducts,
+    getProductById,
+    createProduct,
+    updateProductById,
+    deleteProductById
+} from "../../mongodb/products/products";
+import { put } from "@vercel/blob";
 
-const graphql = require('graphql');
+const graphql = require("graphql");
 
 export const ProductType = new graphql.GraphQLObjectType({
-	name: 'Product',
-	fields: {
-		_id: { type: graphql.GraphQLID },
+    name: "Product",
+    fields: {
+        _id: { type: graphql.GraphQLID },
         title: { type: graphql.GraphQLString },
         description: { type: graphql.GraphQLString },
         img_blob: { type: graphql.GraphQLString },
         img_url: { type: graphql.GraphQLString },
         price: { type: graphql.GraphQLFloat },
         featured: { type: graphql.GraphQLBoolean }
-	}
+    }
 });
 
 export const getProductsTask = {
@@ -21,7 +27,7 @@ export const getProductsTask = {
     resolve: async (root, args, context, info) => {
         return getProducts();
     }
-}
+};
 
 export const getProductByIdTask = {
     type: ProductType,
@@ -33,7 +39,7 @@ export const getProductByIdTask = {
     resolve: async (root, { _id }, context, info) => {
         return getProductById(_id);
     }
-}
+};
 
 export const createProductTask = {
     type: ProductType,
@@ -57,12 +63,15 @@ export const createProductTask = {
             type: new graphql.GraphQLNonNull(graphql.GraphQLBoolean)
         }
     },
-    resolve: async (root, { title, description, img_blob, img_url, price, featured }) => {
+    resolve: async (
+        root,
+        { title, description, img_blob, img_url, price, featured }
+    ) => {
         let img_url_save;
-        if (img_blob){
-            let img_buff = Buffer.from(img_blob, 'base64');
-            const { url } = await put('burger.jpg', img_buff, {
-                access: 'public',
+        if (img_blob) {
+            let img_buff = Buffer.from(img_blob, "base64");
+            const { url } = await put("burger.jpg", img_buff, {
+                access: "public"
             });
             img_url_save = url;
         } else {
@@ -70,7 +79,7 @@ export const createProductTask = {
         }
         return createProduct(title, description, img_url_save, price, featured);
     }
-}
+};
 
 export const updateProductByIdTask = {
     type: ProductType,
@@ -97,22 +106,32 @@ export const updateProductByIdTask = {
             type: new graphql.GraphQLNonNull(graphql.GraphQLBoolean)
         }
     },
-    resolve: async (root, { _id, title, description, img_blob, img_url, price, featured }) => {
+    resolve: async (
+        root,
+        { _id, title, description, img_blob, img_url, price, featured }
+    ) => {
         let img_url_save;
-        if (img_blob){
-            let img_buff = Buffer.from(img_blob, 'base64');
-            const { url } = await put('burger.jpg', img_buff, {
-                access: 'public',
+        if (img_blob) {
+            let img_buff = Buffer.from(img_blob, "base64");
+            const { url } = await put("burger.jpg", img_buff, {
+                access: "public"
             });
             img_url_save = url;
         } else {
             img_url_save = img_url;
         }
-        return updateProductById(_id, title, description, img_url_save, price, featured);
+        return updateProductById(
+            _id,
+            title,
+            description,
+            img_url_save,
+            price,
+            featured
+        );
     }
-}
+};
 
-export const deleteProductByIdTask ={
+export const deleteProductByIdTask = {
     type: graphql.GraphQLString,
     args: {
         _id: {
@@ -122,4 +141,4 @@ export const deleteProductByIdTask ={
     resolve: async (root, { _id }) => {
         return deleteProductById(_id);
     }
-}
+};

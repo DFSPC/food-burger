@@ -1,10 +1,10 @@
-const { ObjectId } = require('mongodb');
+const { ObjectId } = require("mongodb");
 import { connectToDatabase } from "../main";
 
-export async function getProducts(){
+export async function getProducts() {
     try {
         let { db } = await connectToDatabase();
-        let products = await db.collection("products").find().toArray()
+        let products = await db.collection("products").find().toArray();
         return products;
     } catch (error) {
         client.close();
@@ -12,18 +12,27 @@ export async function getProducts(){
     }
 }
 
-export async function getProductById(_id){
+export async function getProductById(_id) {
     try {
         let { db } = await connectToDatabase();
-        let product = await db.collection("products").find({_id: new ObjectId(_id)}).toArray();
-        return product[0] ? product[0] : null;				
+        let product = await db
+            .collection("products")
+            .find({ _id: new ObjectId(_id) })
+            .toArray();
+        return product[0] ? product[0] : null;
     } catch (error) {
         client.close();
         return null;
     }
 }
 
-export async function createProduct(title, description, img_url, price, featured){
+export async function createProduct(
+    title,
+    description,
+    img_url,
+    price,
+    featured
+) {
     try {
         let { db } = await connectToDatabase();
         const products = await db.collection("products");
@@ -35,15 +44,25 @@ export async function createProduct(title, description, img_url, price, featured
             featured: featured
         };
         const insertedId = (await products.insertOne(newProduct)).insertedId;
-        let product = await db.collection("products").find({_id: new ObjectId(insertedId)}).toArray();
+        let product = await db
+            .collection("products")
+            .find({ _id: new ObjectId(insertedId) })
+            .toArray();
         return product[0] ? product[0] : null;
     } catch (error) {
         client.close();
-        return 'Problem creating product'
+        return "Problem creating product";
     }
 }
 
-export async function updateProductById(_id, title, description, img_url, price, featured){
+export async function updateProductById(
+    _id,
+    title,
+    description,
+    img_url,
+    price,
+    featured
+) {
     try {
         let { db } = await connectToDatabase();
         const products = await db.collection("products");
@@ -59,22 +78,29 @@ export async function updateProductById(_id, title, description, img_url, price,
                 }
             }
         );
-        if (updated.matchedCount){
-            let product = await db.collection("products").find({_id: new ObjectId(_id)}).toArray();
+        if (updated.matchedCount) {
+            let product = await db
+                .collection("products")
+                .find({ _id: new ObjectId(_id) })
+                .toArray();
             return product[0] ? product[0] : null;
         }
     } catch (error) {
         client.close();
-        return 'Problem updating product'
+        return "Problem updating product";
     }
 }
 
-export async function deleteProductById(_id){
+export async function deleteProductById(_id) {
     try {
         let { db } = await connectToDatabase();
-        let deleted = await db.collection("products").deleteOne({_id: new ObjectId(_id)});
-        return deleted.deletedCount ? `Product id ${_id} deleted` : 'Problem deleting product'; 			
+        let deleted = await db
+            .collection("products")
+            .deleteOne({ _id: new ObjectId(_id) });
+        return deleted.deletedCount
+            ? `Product id ${_id} deleted`
+            : "Problem deleting product";
     } catch (error) {
-        return 'Problem deleting product';
+        return "Problem deleting product";
     }
 }

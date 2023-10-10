@@ -1,10 +1,10 @@
-const { ObjectId } = require('mongodb');
+const { ObjectId } = require("mongodb");
 import { connectToDatabase } from "../main";
 
-export async function getUsers(){
+export async function getUsers() {
     try {
         let { db } = await connectToDatabase();
-        let users = await db.collection("users").find().toArray()
+        let users = await db.collection("users").find().toArray();
         return users;
     } catch (error) {
         client.close();
@@ -12,21 +12,13 @@ export async function getUsers(){
     }
 }
 
-export async function getUserById(_id){
+export async function getUserById(_id) {
     try {
         let { db } = await connectToDatabase();
-        let user = await db.collection("users").find({_id: new ObjectId(_id)}).toArray();
-        return user[0] ? user[0] : null;				
-    } catch (error) {
-        client.close();
-        return null;
-    }
-}
-
-export async function getUserByEmail(email){
-    try {
-        let { db } = await connectToDatabase();
-        let user = await db.collection("users").find({email: email}).toArray();
+        let user = await db
+            .collection("users")
+            .find({ _id: new ObjectId(_id) })
+            .toArray();
         return user[0] ? user[0] : null;
     } catch (error) {
         client.close();
@@ -34,7 +26,21 @@ export async function getUserByEmail(email){
     }
 }
 
-export async function createUser(fullname, email, password, cellphone, rol){
+export async function getUserByEmail(email) {
+    try {
+        let { db } = await connectToDatabase();
+        let user = await db
+            .collection("users")
+            .find({ email: email })
+            .toArray();
+        return user[0] ? user[0] : null;
+    } catch (error) {
+        client.close();
+        return null;
+    }
+}
+
+export async function createUser(fullname, email, password, cellphone, rol) {
     try {
         let { db } = await connectToDatabase();
         const users = await db.collection("users");
@@ -42,19 +48,28 @@ export async function createUser(fullname, email, password, cellphone, rol){
             fullname: fullname,
             email: email,
             password: password,
-            cellphone:cellphone,
-            rol: rol,
+            cellphone: cellphone,
+            rol: rol
         };
         const insertedId = (await users.insertOne(newUser)).insertedId;
-        let user = await db.collection("users").find({_id: new ObjectId(insertedId)}).toArray();
+        let user = await db
+            .collection("users")
+            .find({ _id: new ObjectId(insertedId) })
+            .toArray();
         return user[0] ? user[0] : null;
     } catch (error) {
         client.close();
-        return 'Problem creating user'
+        return "Problem creating user";
     }
 }
 
-export async function updateUserById(_id, fullname, email, password, cellphone){
+export async function updateUserById(
+    _id,
+    fullname,
+    email,
+    password,
+    cellphone
+) {
     try {
         let { db } = await connectToDatabase();
         const users = await db.collection("users");
@@ -65,26 +80,33 @@ export async function updateUserById(_id, fullname, email, password, cellphone){
                     fullname: fullname,
                     email: email,
                     password: password,
-                    cellphone:cellphone
+                    cellphone: cellphone
                 }
             }
         );
-        if (updated.matchedCount){
-            let user = await db.collection("users").find({_id: new ObjectId(_id)}).toArray();
+        if (updated.matchedCount) {
+            let user = await db
+                .collection("users")
+                .find({ _id: new ObjectId(_id) })
+                .toArray();
             return user[0] ? user[0] : null;
         }
     } catch (error) {
         client.close();
-        return 'Problem updating user'
+        return "Problem updating user";
     }
 }
 
-export async function deleteUserById(_id){
+export async function deleteUserById(_id) {
     try {
         let { db } = await connectToDatabase();
-        let deleted = await db.collection("users").deleteOne({_id: new ObjectId(_id)});
-        return deleted.deletedCount ? `User id ${_id} deleted` : 'Problem deleting user'; 			
+        let deleted = await db
+            .collection("users")
+            .deleteOne({ _id: new ObjectId(_id) });
+        return deleted.deletedCount
+            ? `User id ${_id} deleted`
+            : "Problem deleting user";
     } catch (error) {
-        return 'Problem deleting user';
+        return "Problem deleting user";
     }
 }
