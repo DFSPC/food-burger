@@ -24,14 +24,14 @@ const queryType = new graphql.GraphQLObjectType({
         products: getProductsTask,
         product: getProductByIdTask,
         users: getUsersTask,
-        user: getUserByIdTask
+        user: getUserByIdTask,
+        getUserByEmailPassword: getUserByEmailPasswordTask
     }
 });
 
 const mutationType = new graphql.GraphQLObjectType({
     name: "Mutation",
     fields: {
-        getUserByEmailPassword: getUserByEmailPasswordTask,
         createProduct: createProductTask,
         updateProduct: updateProductByIdTask,
         deleteProduct: deleteProductByIdTask,
